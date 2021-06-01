@@ -37,10 +37,6 @@ app.get("/room/:room_id", (req, res) => {
     });
 });
 
-app.get("/room", (req, res) => {
-    res.render("room", { room: { room_id: "cvghj", name: "Map #12345" } });
-});
-
 const server = app.listen(5000, () => console.log("Live at 5000..."));
 
 // Web Sockets
