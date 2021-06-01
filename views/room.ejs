@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Map Veto</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
+            crossorigin="anonymous"
+        />
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            }
+            body {
+                background-image: url("/images/back.jpg");
+                background-size: 100%;
+                background-repeat: no-repeat;
+            }
+            .box {
+                display: flex;
+                justify-content: space-evenly;
+                align-items: flex-start;
+                margin: 20px auto;
+            }
+            section {
+                padding: 20px;
+            }
+            #clock,
+            #turn {
+                font-size: 30px;
+            }
+            #loader {
+                margin: 100px auto;
+            }
+            .maps {
+                width: 20vw;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border: 1px solid;
+                margin: 20px auto;
+                padding: 0 5px 0 0;
+            }
+            .maps span {
+                margin: 0 auto 0 10px;
+            }
+            .btn-close {
+                visibility: hidden;
+            }
+            .maps img {
+                width: 50px;
+                height: 35px;
+            }
+            section {
+                border: 1px solid;
+            }
+            .card {
+                border: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container text-center">
+            <h1 class="display-1"><%= room.name %></h1>
+            <br />
+            <div class="box">
+                <section>
+                    <h2 class="display-6">Player 1</h2>
+                    <br /><br />
+                    <span id="player_1"></span>
+                </section>
+                <section>
+                    <div id="clock">Waiting For Players...</div>
+                    <br />
+                    <div id="turn"></div>
+                    <div id="veto" hidden>
+                        <!-- Maps -->
+                        <div class="maps" id="de_cache">
+                            <img src="/images/de_cache.jpg" alt="" />
+                            <span>Cache</span>
+                            <button type="button" class="btn-close" aria-label="Close" onclick="ban('de_cache')"></button>
+                        </div>
+                        <div class="maps" id="de_cbble">
+                            <img src="/images/de_cbble.jpg" alt="" />
+                            <span>Cobblestone</span>
+                            <button type="button" class="btn-close" aria-label="Close" onclick="ban('de_cbble')"></button>
+                        </div>
+                        <div class="maps" id="de_dust2">
+                            <img src="/images/de_dust2.jpg" alt="" />
+                            <span>Dust2</span>
+                            <button type="button" class="btn-close" aria-label="Close" onclick="ban('de_dust2')"></button>
+                        </div>
+                        <div class="maps" id="de_inferno">
+                            <img src="/images/de_inferno.jpg" alt="" />
+                            <span>Inferno</span>
+                            <button type="button" class="btn-close" aria-label="Close" onclick="ban('de_inferno')"></button>
+                        </div>
+                        <div class="maps" id="cs_italy">
+                            <img src="/images/cs_italy.jpg" alt="" />
+                            <span>Italy</span>
+                            <button type="button" class="btn-close" aria-label="Close" onclick="ban('cs_italy')"></button>
+                        </div>
+                        <div class="maps" id="de_mirage">
+                            <img src="/images/de_mirage.jpg" alt="" />
+                            <span>Mirage</span>
+                            <button type="button" class="btn-close" aria-label="Close" onclick="ban('de_mirage')"></button>
+                        </div>
+                        <div class="maps" id="de_nuke">
+                            <img src="/images/de_nuke.jpg" alt="" />
+                            <span>Nuke</span>
+                            <button type="button" class="btn-close" aria-label="Close" onclick="ban('de_nuke')"></button>
+                        </div>
+                        <div class="maps" id="cs_office">
+                            <img src="/images/cs_office.jpg" alt="" />
+                            <span>Office</span>
+                            <button type="button" class="btn-close" aria-label="Close" onclick="ban('cs_office')"></button>
+                        </div>
+                        <div class="maps" id="de_overpass">
+                            <img src="/images/de_overpass.jpg" alt="" />
+                            <span>Overpass</span>
+                            <button type="button" class="btn-close" aria-label="Close" onclick="ban('de_overpass')"></button>
+                        </div>
+                        <div class="maps" id="de_train">
+                            <img src="/images/de_train.jpg" alt="" />
+                            <span>Train</span>
+                            <button type="button" class="btn-close" aria-label="Close" onclick="ban('de_train')"></button>
+                        </div>
+                        <div class="maps" id="de_vertigo">
+                            <img src="/images/de_vertigo.jpg" alt="" />
+                            <span>Vertigo</span>
+                            <button type="button" class="btn-close" aria-label="Close" onclick="ban('de_vertigo')"></button>
+                        </div>
+                    </div>
+
+                    <!-- Loading -->
+                    <div class="spinner-border" id="loader" role="status" hidden></div>
+
+                    <!-- Selected Map -->
+                    <div id="final" hidden>
+                        <div class="card" style="width: 18rem">
+                            <img class="card-img-top" id="logo" />
+                            <div class="card-body">
+                                <h5 class="card-title" id="name"></h5>
+                                <br />
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" id="url" value="connect 127.0.0.1:27015" readonly />
+                                    <button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="copy()">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="16"
+                                            height="16"
+                                            fill="currentColor"
+                                            class="bi bi-clipboard"
+                                            viewBox="0 0 16 16"
+                                        >
+                                            <path
+                                                d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"
+                                            />
+                                            <path
+                                                d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"
+                                            />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <br />
+                                <a href="steam://connect/127.0.0.1:27015" class="btn btn-primary">CONNECT TO SERVER</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <h2 class="display-6">Player 2</h2>
+                    <br /><br />
+                    <span id="player_2"></span>
+                </section>
+            </div>
+        </div>
+
+        <!-- JS -->
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+            crossorigin="anonymous"
+        ></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            let ID, time;
+            var name = prompt("Please enter your name");
+            if (name == null || name == "") {
+                window.location.href = "/";
+            }
+
+            const space = io("/room");
+            space.emit("joinRoom", { player: name, room: `<%= room.room_id%>` });
+
+            space.on("players", function (data) {
+                if (data.player_1_joined) document.getElementById("player_1").innerText = data.player_1;
+                if (data.player_2_joined) document.getElementById("player_2").innerText = data.player_2;
+            });
+
+            space.on("turn", function (user) {
+                let map = document.querySelectorAll(".btn-close");
+                if (user === name) {
+                    document.getElementById("turn").innerText = "Your Turn";
+                    for (let i = 0; i < map.length; i++) {
+                        map[i].style.visibility = "visible";
+                    }
+                } else document.getElementById("turn").innerText = "Your Opponent's Turn";
+            });
+
+            space.on("mapBanned", function (ban) {
+                document.getElementById(ban).remove();
+            });
+
+            space.on("incTime", function () {
+                time += 5;
+            });
+
+            space.on("mapSelected", function (selected) {
+                clearInterval(ID);
+                document.getElementById("logo").setAttribute("src", `/images/${selected}.jpg`);
+                if (selected === "de_cbble") selected = "de_cobblestone";
+                document.getElementById("name").innerText = selected.slice(3).charAt(0).toUpperCase() + selected.slice(4);
+                document.getElementById("clock").hidden = true;
+                document.getElementById("turn").hidden = true;
+                document.getElementById("loader").remove();
+                document.getElementById("veto").remove();
+                document.getElementById("final").hidden = false;
+            });
+
+            space.on("loading", function () {
+                document.getElementById("clock").hidden = true;
+                document.getElementById("loader").hidden = false;
+                document.getElementById("veto").hidden = true;
+            });
+
+            space.on("startVeto", function (counter) {
+                time = counter;
+                document.getElementById("veto").hidden = false;
+                ID = setInterval(function () {
+                    if (time > 9) document.getElementById("clock").innerHTML = "00:" + time--;
+                    else if (time >= 0) document.getElementById("clock").innerHTML = "00:0" + time--;
+                    else {
+                        clearInterval(ID);
+                        document.getElementById("clock").innerHTML = "";
+                        space.emit("randomMap", `<%= room.room_id%>`);
+                    }
+                }, 1000);
+            });
+
+            function ban(id) {
+                let map = document.getElementsByClassName("btn-close");
+                for (let i = 0; i < map.length; i++) {
+                    map[i].style.visibility = "hidden";
+                }
+                space.emit("banMap", { map: id, room: `<%= room.room_id %>` });
+            }
+
+            // Copy to clipboard
+            function copy() {
+                var copyText = document.getElementById("url");
+                copyText.select();
+                copyText.setSelectionRange(0, 99999); /* For mobile devices */
+                document.execCommand("copy");
+            }
+        </script>
+    </body>
+</html>
